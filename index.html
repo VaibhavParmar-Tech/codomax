@@ -4,38 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Personal Website - Home</title>
+    <!-- CSS File Link -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <!-- Header & Navigation Bar -->
-    <header>
-        <h1>Welcome to My Website</h1>
+    <header class="navbar">
+        <div class="logo">
+            <h1>My Blog</h1>
+        </div>
         <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="add-blog.html">Add Blog</a></li>
             </ul>
         </nav>
     </header>
 
-    <hr>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>Welcome to My Tech World</h2>
+        <p>Explore articles, tutorials, and insights on web development.</p>
+    </section>
 
     <!-- Main Content -->
-    <main>
-        <section>
-            <h2>Featured Posts</h2>
-            <article>
-                <h3>Getting Started with Web Development</h3>
-                <p>Published on: July 22, 2026</p>
-                <p>Welcome to my tech journey! Today I am building the basic layout using standard HTML tags.</p>
-            </article>
+    <main class="main-container">
+        <section class="blog-section">
+            <h2 class="section-title">Featured Posts</h2>
+            
+            <div class="blog-grid">
+                <!-- Blog Card 1 -->
+                <article class="blog-card">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Code Editor" class="card-image">
+                    <div class="card-content">
+                        <span class="card-tag">Web Dev</span>
+                        <h3 class="card-title">Getting Started with Web Development</h3>
+                        <p class="card-date">July 22, 2026</p>
+                        <p class="card-text">Welcome to my tech journey! Today I am building the basic layout using standard HTML tags.</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                </article>
+
+                <!-- Blog Card 2 (Demo for Grid Layout) -->
+                <article class="blog-card">
+                    <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=600&q=80" alt="Laptop on Desk" class="card-image">
+                    <div class="card-content">
+                        <span class="card-tag">CSS Grid</span>
+                        <h3 class="card-title">Mastering Layouts with CSS</h3>
+                        <p class="card-date">July 23, 2026</p>
+                        <p class="card-text">Learn how to align components effortlessly using Flexbox and CSS Grid system.</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                </article>
+            </div>
         </section>
     </main>
 
-    <hr>
-
     <!-- Footer -->
-    <footer>
+    <footer class="footer">
         <p>&copy; 2026 My Personal Blog. All rights reserved.</p>
     </footer>
 
