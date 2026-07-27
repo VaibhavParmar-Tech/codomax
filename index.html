@@ -33,30 +33,9 @@
         <section class="blog-section">
             <h2 class="section-title">Featured Posts</h2>
             
-            <div class="blog-grid">
-                <!-- Blog Card 1 -->
-                <article class="blog-card">
-                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Code Editor" class="card-image">
-                    <div class="card-content">
-                        <span class="card-tag">Web Dev</span>
-                        <h3 class="card-title">Getting Started with Web Development</h3>
-                        <p class="card-date">July 22, 2026</p>
-                        <p class="card-text">Welcome to my tech journey! Today I am building the basic layout using standard HTML tags.</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
-                    </div>
-                </article>
-
-                <!-- Blog Card 2 (Demo for Grid Layout) -->
-                <article class="blog-card">
-                    <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=600&q=80" alt="Laptop on Desk" class="card-image">
-                    <div class="card-content">
-                        <span class="card-tag">CSS Grid</span>
-                        <h3 class="card-title">Mastering Layouts with CSS</h3>
-                        <p class="card-date">July 23, 2026</p>
-                        <p class="card-text">Learn how to align components effortlessly using Flexbox and CSS Grid system.</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
-                    </div>
-                </article>
+            <!-- Dynamically populated from Backend API (DAY 7 TASK) -->
+            <div class="blog-grid" id="blog-grid">
+                <p>Blogs loading ho rahe hain...</p>
             </div>
         </section>
     </main>
@@ -65,6 +44,56 @@
     <footer class="footer">
         <p>&copy; 2026 My Personal Blog. All rights reserved.</p>
     </footer>
+
+    <!-- Day 7 Task: Backend API se Blog Posts fetch karne ka Script -->
+    <script>
+        async function fetchBlogs() {
+            const blogGrid = document.getElementById('blog-grid');
+            
+            try {
+                // Server (Day 6 & 7 API) se blogs mangwane ke liye fetch request
+                const response = await fetch('http://localhost:3000/api/posts');
+                const result = await response.json();
+
+                // Clear loading text
+                blogGrid.innerHTML = '';
+
+                // Agar koi blog nahi hai toh empty message dikhao
+                if (!result.data || result.data.length === 0) {
+                    blogGrid.innerHTML = '<p>Koi blog nahi mila. Day 6 page par jaakar naya blog add karein!</p>';
+                    return;
+                }
+
+                // Backend se aaye har blog ko HTML card bana kar display karna
+                result.data.forEach(blog => {
+                    const createdDate = blog.createdAt 
+                        ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : 'Recently';
+
+                    const blogCard = `
+                        <article class="blog-card">
+                            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Blog Image" class="card-image">
+                            <div class="card-content">
+                                <span class="card-tag">By ${blog.author || 'Anonymous'}</span>
+                                <h3 class="card-title">${blog.title}</h3>
+                                <p class="card-date">${createdDate}</p>
+                                <p class="card-text">${blog.content}</p>
+                                <a href="#" class="btn btn-primary">Read More</a>
+                            </div>
+                        </article>
+                    `;
+                    blogGrid.innerHTML += blogCard;
+                });
+
+            } catch (error) {
+                console.error("Error loading blogs:", error);
+                blogGrid.innerHTML = '<p style="color:red;">Server se blogs fetch nahi ho paye. Make sure `node server.js` chal raha ho!</p>';
+            }
+        }
+
+        // Page load hote hi API call karna
+        fetchBlogs();
+    </script>
 
 </body>
 </html>

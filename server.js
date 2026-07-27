@@ -1,9 +1,11 @@
 const express = require('express');
+const cors = require('cors'); // CORS add kiya hai taaki Frontend easily connect ho sake
 const app = express();
 const PORT = 3000;
 
-// Middleware: Request body se JSON data read karne ke liye zaruri hai
-app.use(express.json());
+// Middlewares
+app.use(cors()); // Cross-Origin Requests allow karne ke liye
+app.use(express.json()); // Request body se JSON data read karne ke liye
 
 // Fake database (In-memory array for Items)
 const items = [
@@ -11,12 +13,21 @@ const items = [
   { id: 2, name: 'Item Two' }
 ];
 
-// Fake database (In-memory array for Blog Posts - DAY 6)
-const blogPosts = [];
+// Fake database (In-memory array for Blog Posts)
+const blogPosts = [
+  // Sample Data (Testing ke liye ki Home Page par shuru me hi blogs dikhein)
+  {
+    id: 1,
+    title: 'First Welcome Blog',
+    content: 'Welcome to our blog platform! Day 7 View Blogs task completed.',
+    author: 'Admin',
+    createdAt: new Date().toISOString()
+  }
+];
 
-// 1. Root route (Aapka pehle se bana hua code)
+// 1. Root route
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hello World! Blog API is running.');
 });
 
 // 2. GET Route: Sare items retrieve karne ke liye
@@ -49,7 +60,6 @@ app.get('/api/items/:id', (req, res) => {
 app.post('/api/items', (req, res) => {
   const { name } = req.body;
 
-  // Simple Validation: Agar name nahi bheja toh error de do
   if (!name) {
     return res.status(400).json({
       success: false,
@@ -72,10 +82,11 @@ app.post('/api/items', (req, res) => {
 });
 
 // ==========================================
-// DAY 6 TASK: BLOG POSTS API ENDPOINTS
+// DAY 6 & DAY 7: BLOG POSTS API ENDPOINTS
 // ==========================================
 
-// 5. GET Route: Saare Blog Posts dekhne ke liye
+// 5. GET Route: Saare Blog Posts dekhne ke liye (DAY 7 CORE TASK)
+// Home page par Display/View karne ke liye yehi API call hogi
 app.get('/api/posts', (req, res) => {
   res.status(200).json({
     success: true,
@@ -88,7 +99,6 @@ app.get('/api/posts', (req, res) => {
 app.post('/api/posts', (req, res) => {
   const { title, content, author } = req.body;
 
-  // Validation: Title aur Content dono zaroori hain
   if (!title || !content) {
     return res.status(400).json({
       success: false,
@@ -104,7 +114,6 @@ app.post('/api/posts', (req, res) => {
     createdAt: new Date().toISOString()
   };
 
-  // Array mein blog post save ho raha hai
   blogPosts.push(newPost);
 
   res.status(201).json({
@@ -114,7 +123,7 @@ app.post('/api/posts', (req, res) => {
   });
 });
 
-// Server Listen (Hamesha file ke end mein)
+// Server Listen
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
