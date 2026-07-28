@@ -6,6 +6,78 @@
     <title>My Personal Website - Home</title>
     <!-- CSS File Link -->
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Day 8: Edit Modal Styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .modal-box h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .btn-edit {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-save {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
@@ -33,38 +105,61 @@
         <section class="blog-section">
             <h2 class="section-title">Featured Posts</h2>
             
-            <!-- Dynamically populated from Backend API (DAY 7 TASK) -->
+            <!-- Dynamically populated from Backend API (DAY 7 & DAY 8 TASK) -->
             <div class="blog-grid" id="blog-grid">
                 <p>Blogs loading ho rahe hain...</p>
             </div>
         </section>
     </main>
 
+    <!-- DAY 8: Edit Blog Post Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <h3>Edit Blog Post</h3>
+            <input type="hidden" id="editPostId">
+            <div class="form-group">
+                <label for="editTitle">Title:</label>
+                <input type="text" id="editTitle" required>
+            </div>
+            <div class="form-group">
+                <label for="editAuthor">Author:</label>
+                <input type="text" id="editAuthor">
+            </div>
+            <div class="form-group">
+                <label for="editContent">Content:</label>
+                <textarea id="editContent" rows="5" required></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="btn-save" onclick="updateBlogPost()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2026 My Personal Blog. All rights reserved.</p>
     </footer>
 
-    <!-- Day 7 Task: Backend API se Blog Posts fetch karne ka Script -->
+    <!-- Day 7 & 8 Script -->
     <script>
+        const API_BASE_URL = 'http://localhost:3000/api/posts';
+
+        // 1. Fetch & Display Blogs
         async function fetchBlogs() {
             const blogGrid = document.getElementById('blog-grid');
             
             try {
-                // Server (Day 6 & 7 API) se blogs mangwane ke liye fetch request
-                const response = await fetch('http://localhost:3000/api/posts');
+                const response = await fetch(API_BASE_URL);
                 const result = await response.json();
 
-                // Clear loading text
                 blogGrid.innerHTML = '';
 
-                // Agar koi blog nahi hai toh empty message dikhao
                 if (!result.data || result.data.length === 0) {
                     blogGrid.innerHTML = '<p>Koi blog nahi mila. Day 6 page par jaakar naya blog add karein!</p>';
                     return;
                 }
 
-                // Backend se aaye har blog ko HTML card bana kar display karna
                 result.data.forEach(blog => {
                     const createdDate = blog.createdAt 
                         ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -78,7 +173,7 @@
                                 <h3 class="card-title">${blog.title}</h3>
                                 <p class="card-date">${createdDate}</p>
                                 <p class="card-text">${blog.content}</p>
-                                <a href="#" class="btn btn-primary">Read More</a>
+                                <button class="btn-edit" onclick="openEditModal(${blog.id})">Edit Post</button>
                             </div>
                         </article>
                     `;
@@ -91,7 +186,71 @@
             }
         }
 
-        // Page load hote hi API call karna
+        // 2. DAY 8: Edit Modal Kholna aur purana data bharna
+        async function openEditModal(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/${id}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('editPostId').value = result.data.id;
+                    document.getElementById('editTitle').value = result.data.title;
+                    document.getElementById('editAuthor').value = result.data.author || '';
+                    document.getElementById('editContent').value = result.data.content;
+                    
+                    document.getElementById('editModal').style.display = 'flex';
+                } else {
+                    alert('Post data fetch nahi ho paya!');
+                }
+            } catch (error) {
+                console.error("Error fetching single post:", error);
+            }
+        }
+
+        // 3. DAY 8: Cancel Button se modal band karna
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // 4. DAY 8: PUT API Request dwara post update karna
+        async function updateBlogPost() {
+            const id = document.getElementById('editPostId').value;
+            const updatedData = {
+                title: document.getElementById('editTitle').value,
+                author: document.getElementById('editAuthor').value,
+                content: document.getElementById('editContent').value
+            };
+
+            if (!updatedData.title || !updatedData.content) {
+                alert('Please Title aur Content dono bharein!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Blog Post successfully update ho gaya!');
+                    closeEditModal();
+                    fetchBlogs(); // Updated posts screen par reload kar dega
+                } else {
+                    alert('Update failed: ' + result.message);
+                }
+            } catch (error) {
+                console.error("Error updating blog:", error);
+                alert('Server error while updating post.');
+            }
+        }
+
+        // Initial Load
         fetchBlogs();
     </script>
 

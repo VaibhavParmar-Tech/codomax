@@ -82,16 +82,33 @@ app.post('/api/items', (req, res) => {
 });
 
 // ==========================================
-// DAY 6 & DAY 7: BLOG POSTS API ENDPOINTS
+// DAY 6, 7 & 8: BLOG POSTS API ENDPOINTS
 // ==========================================
 
 // 5. GET Route: Saare Blog Posts dekhne ke liye (DAY 7 CORE TASK)
-// Home page par Display/View karne ke liye yehi API call hogi
 app.get('/api/posts', (req, res) => {
   res.status(200).json({
     success: true,
     count: blogPosts.length,
     data: blogPosts
+  });
+});
+
+// 5b. GET Route (By ID): Single Blog Post fetch karne ke liye (Edit form pre-fill karne ke liye)
+app.get('/api/posts/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const post = blogPosts.find((p) => p.id === id);
+
+  if (!post) {
+    return res.status(404).json({
+      success: false,
+      message: 'Blog post nahi mila!'
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: post
   });
 });
 
@@ -120,6 +137,37 @@ app.post('/api/posts', (req, res) => {
     success: true,
     message: 'Blog post successfully add ho gaya!',
     data: newPost
+  });
+});
+
+// 7. PUT Route: Blog Post ko Update/Edit karne ke liye (DAY 8 CORE TASK)
+app.put('/api/posts/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { title, content, author } = req.body;
+
+  // Post ko find karenge array me
+  const postIndex = blogPosts.findIndex((p) => p.id === id);
+
+  if (postIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: 'Update ke liye Blog post nahi mila!'
+    });
+  }
+
+  // Update fields (agar request me naya data nahi aaye toh puraane wala hi rehne do)
+  blogPosts[postIndex] = {
+    ...blogPosts[postIndex],
+    title: title !== undefined ? title : blogPosts[postIndex].title,
+    content: content !== undefined ? content : blogPosts[postIndex].content,
+    author: author !== undefined ? author : blogPosts[postIndex].author,
+    updatedAt: new Date().toISOString()
+  };
+
+  res.status(200).json({
+    success: true,
+    message: 'Blog post successfully update ho gaya!',
+    data: blogPosts[postIndex]
   });
 });
 
