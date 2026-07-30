@@ -52,6 +52,11 @@
             gap: 10px;
             justify-content: flex-end;
         }
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
         .btn-edit {
             background-color: #f39c12;
             color: white;
@@ -59,7 +64,15 @@
             padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
+        }
+        /* Day 9: Delete Button Styling */
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
         }
         .btn-save {
             background-color: #27ae60;
@@ -70,7 +83,7 @@
             cursor: pointer;
         }
         .btn-cancel {
-            background-color: #e74c3c;
+            background-color: #7f8c8d;
             color: white;
             border: none;
             padding: 8px 15px;
@@ -105,7 +118,7 @@
         <section class="blog-section">
             <h2 class="section-title">Featured Posts</h2>
             
-            <!-- Dynamically populated from Backend API (DAY 7 & DAY 8 TASK) -->
+            <!-- Dynamically populated from Backend API (DAY 7, 8 & 9 TASK) -->
             <div class="blog-grid" id="blog-grid">
                 <p>Blogs loading ho rahe hain...</p>
             </div>
@@ -141,7 +154,7 @@
         <p>&copy; 2026 My Personal Blog. All rights reserved.</p>
     </footer>
 
-    <!-- Day 7 & 8 Script -->
+    <!-- Day 7, 8 & 9 Script -->
     <script>
         const API_BASE_URL = 'http://localhost:3000/api/posts';
 
@@ -173,7 +186,10 @@
                                 <h3 class="card-title">${blog.title}</h3>
                                 <p class="card-date">${createdDate}</p>
                                 <p class="card-text">${blog.content}</p>
-                                <button class="btn-edit" onclick="openEditModal(${blog.id})">Edit Post</button>
+                                <div class="card-actions">
+                                    <button class="btn-edit" onclick="openEditModal(${blog.id})">Edit Post</button>
+                                    <button class="btn-delete" onclick="deleteBlogPost(${blog.id})">Delete Post</button>
+                                </div>
                             </div>
                         </article>
                     `;
@@ -238,7 +254,7 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('Blog Post successfully update ho gaya!');
+                    alert('Blog Post successfully updated!');
                     closeEditModal();
                     fetchBlogs(); // Updated posts screen par reload kar dega
                 } else {
@@ -247,6 +263,30 @@
             } catch (error) {
                 console.error("Error updating blog:", error);
                 alert('Server error while updating post.');
+            }
+        }
+
+        // 5. DAY 9: DELETE API Request dwara post delete karna
+        async function deleteBlogPost(id) {
+            const confirmDelete = window.confirm("Kya aap sach me is blog post ko delete karna chahte hain?");
+            if (!confirmDelete) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Blog Post successfully delete ho gaya!');
+                    fetchBlogs(); // Cleaned array UI par reload ho jayegi
+                } else {
+                    alert('Delete failed: ' + result.message);
+                }
+            } catch (error) {
+                console.error("Error deleting blog:", error);
+                alert('Server error while deleting post.');
             }
         }
 

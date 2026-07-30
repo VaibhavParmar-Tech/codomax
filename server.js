@@ -14,7 +14,7 @@ const items = [
 ];
 
 // Fake database (In-memory array for Blog Posts)
-const blogPosts = [
+let blogPosts = [
   // Sample Data (Testing ke liye ki Home Page par shuru me hi blogs dikhein)
   {
     id: 1,
@@ -82,7 +82,7 @@ app.post('/api/items', (req, res) => {
 });
 
 // ==========================================
-// DAY 6, 7 & 8: BLOG POSTS API ENDPOINTS
+// DAY 6, 7, 8 & 9: BLOG POSTS API ENDPOINTS
 // ==========================================
 
 // 5. GET Route: Saare Blog Posts dekhne ke liye (DAY 7 CORE TASK)
@@ -124,7 +124,7 @@ app.post('/api/posts', (req, res) => {
   }
 
   const newPost = {
-    id: blogPosts.length + 1,
+    id: blogPosts.length > 0 ? blogPosts[blogPosts.length - 1].id + 1 : 1,
     title: title,
     content: content,
     author: author || 'Anonymous',
@@ -155,7 +155,7 @@ app.put('/api/posts/:id', (req, res) => {
     });
   }
 
-  // Update fields (agar request me naya data nahi aaye toh puraane wala hi rehne do)
+  // Update fields
   blogPosts[postIndex] = {
     ...blogPosts[postIndex],
     title: title !== undefined ? title : blogPosts[postIndex].title,
@@ -168,6 +168,29 @@ app.put('/api/posts/:id', (req, res) => {
     success: true,
     message: 'Blog post successfully update ho gaya!',
     data: blogPosts[postIndex]
+  });
+});
+
+// 8. DELETE Route: Blog Post ko Delete karne ke liye (DAY 9 CORE TASK)
+app.delete('/api/posts/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+
+  // Check karein post exist karti hai ya nahi
+  const postExists = blogPosts.some((p) => p.id === id);
+
+  if (!postExists) {
+    return res.status(404).json({
+      success: false,
+      message: 'Delete karne ke liye Blog post nahi mila!'
+    });
+  }
+
+  // Post ko array se filter karke remove kar dein
+  blogPosts = blogPosts.filter((p) => p.id !== id);
+
+  res.status(200).json({
+    success: true,
+    message: 'Blog post successfully delete ho gaya!'
   });
 });
 
