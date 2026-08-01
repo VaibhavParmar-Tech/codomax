@@ -1,91 +1,36 @@
 const express = require('express');
-const cors = require('cors'); // CORS add kiya hai taaki Frontend easily connect ho sake
+const cors = require('cors');
+const path = require('path');
+
 const app = express();
 const PORT = 3000;
 
 // Middlewares
-app.use(cors()); // Cross-Origin Requests allow karne ke liye
-app.use(express.json()); // Request body se JSON data read karne ke liye
+app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(express.json()); // Parse incoming JSON request bodies
+app.use(express.static(__dirname)); // Serve static files (HTML, CSS, JS)
 
-// Fake database (In-memory array for Items)
-const items = [
-  { id: 1, name: 'Item One' },
-  { id: 2, name: 'Item Two' }
-];
-
-// Fake database (In-memory array for Blog Posts)
+// In-memory Database for Blog Posts
 let blogPosts = [
-  // Sample Data (Testing ke liye ki Home Page par shuru me hi blogs dikhein)
   {
     id: 1,
     title: 'First Welcome Blog',
-    content: 'Welcome to our blog platform! Day 7 View Blogs task completed.',
+    content: 'Welcome to our blog platform! Day 10 Integration task in progress.',
     author: 'Admin',
     createdAt: new Date().toISOString()
   }
 ];
 
-// 1. Root route
+// 1. Root Route
 app.get('/', (req, res) => {
-  res.send('Hello World! Blog API is running.');
-});
-
-// 2. GET Route: Sare items retrieve karne ke liye
-app.get('/api/items', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: items
-  });
-});
-
-// 3. GET Route (By ID): Kisi ek specific item ko mangwane ke liye
-app.get('/api/items/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const item = items.find((i) => i.id === id);
-
-  if (!item) {
-    return res.status(404).json({
-      success: false,
-      message: 'Item nahi mila!'
-    });
-  }
-
-  res.status(200).json({
-    success: true,
-    data: item
-  });
-});
-
-// 4. POST Route: Naya item add karne ke liye
-app.post('/api/items', (req, res) => {
-  const { name } = req.body;
-
-  if (!name) {
-    return res.status(400).json({
-      success: false,
-      message: 'Please item ka name zaroor bhejein.'
-    });
-  }
-
-  const newItem = {
-    id: items.length + 1,
-    name: name
-  };
-
-  items.push(newItem);
-
-  res.status(201).json({
-    success: true,
-    message: 'Item successfully add ho gaya!',
-    data: newItem
-  });
+  res.send('Blog API Server is running on Day 10!');
 });
 
 // ==========================================
-// DAY 6, 7, 8 & 9: BLOG POSTS API ENDPOINTS
+// DAY 10: FULLY CONNECTED BLOG API ENDPOINTS
 // ==========================================
 
-// 5. GET Route: Saare Blog Posts dekhne ke liye (DAY 7 CORE TASK)
+// 2. GET Route: Fetch all blog posts
 app.get('/api/posts', (req, res) => {
   res.status(200).json({
     success: true,
@@ -94,7 +39,7 @@ app.get('/api/posts', (req, res) => {
   });
 });
 
-// 5b. GET Route (By ID): Single Blog Post fetch karne ke liye (Edit form pre-fill karne ke liye)
+// 3. GET Route (By ID): Fetch a single blog post (For editing modal)
 app.get('/api/posts/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const post = blogPosts.find((p) => p.id === id);
@@ -102,7 +47,7 @@ app.get('/api/posts/:id', (req, res) => {
   if (!post) {
     return res.status(404).json({
       success: false,
-      message: 'Blog post nahi mila!'
+      message: 'Blog post not found!'
     });
   }
 
@@ -112,14 +57,14 @@ app.get('/api/posts/:id', (req, res) => {
   });
 });
 
-// 6. POST Route: Naya Blog Post create karne ke liye (DAY 6 CORE TASK)
+// 4. POST Route: Create a new blog post
 app.post('/api/posts', (req, res) => {
   const { title, content, author } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({
       success: false,
-      message: 'Please title aur content zaroor bhejein.'
+      message: 'Title and content are required!'
     });
   }
 
@@ -135,27 +80,25 @@ app.post('/api/posts', (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: 'Blog post successfully add ho gaya!',
+    message: 'Blog post created successfully!',
     data: newPost
   });
 });
 
-// 7. PUT Route: Blog Post ko Update/Edit karne ke liye (DAY 8 CORE TASK)
+// 5. PUT Route: Update an existing blog post
 app.put('/api/posts/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const { title, content, author } = req.body;
 
-  // Post ko find karenge array me
   const postIndex = blogPosts.findIndex((p) => p.id === id);
 
   if (postIndex === -1) {
     return res.status(404).json({
       success: false,
-      message: 'Update ke liye Blog post nahi mila!'
+      message: 'Blog post not found for update!'
     });
   }
 
-  // Update fields
   blogPosts[postIndex] = {
     ...blogPosts[postIndex],
     title: title !== undefined ? title : blogPosts[postIndex].title,
@@ -166,31 +109,29 @@ app.put('/api/posts/:id', (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: 'Blog post successfully update ho gaya!',
+    message: 'Blog post updated successfully!',
     data: blogPosts[postIndex]
   });
 });
 
-// 8. DELETE Route: Blog Post ko Delete karne ke liye (DAY 9 CORE TASK)
+// 6. DELETE Route: Delete a blog post
 app.delete('/api/posts/:id', (req, res) => {
   const id = parseInt(req.params.id);
 
-  // Check karein post exist karti hai ya nahi
   const postExists = blogPosts.some((p) => p.id === id);
 
   if (!postExists) {
     return res.status(404).json({
       success: false,
-      message: 'Delete karne ke liye Blog post nahi mila!'
+      message: 'Blog post not found for deletion!'
     });
   }
 
-  // Post ko array se filter karke remove kar dein
   blogPosts = blogPosts.filter((p) => p.id !== id);
 
   res.status(200).json({
     success: true,
-    message: 'Blog post successfully delete ho gaya!'
+    message: 'Blog post deleted successfully!'
   });
 });
 
