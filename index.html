@@ -182,46 +182,14 @@
                 const response = await fetch(API_BASE_URL);
                 const result = await response.json();
 
-                blogGrid.innerHTML = '';
-
-                if (!result.data || result.data.length === 0) {
+                if (result.success && result.data && result.data.length > 0) {
+                    renderBlogs(result.data);
+                } else {
                     renderBlogs(demoBlogs);
-                    return;
                 }
-
-<<<<<<< HEAD
-                result.data.forEach(blog => {
-                    const createdDate = blog.createdAt 
-                        ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                        : 'Recently';
-
-                    const blogCard = `
-                        <article class="blog-card">
-                            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Blog Image" class="card-image" loading="lazy">
-                            <div class="card-content">
-                                <span class="card-tag">By ${blog.author || 'Anonymous'}</span>
-                                <h3 class="card-title">${blog.title}</h3>
-                                <p class="card-date">${createdDate}</p>
-                                <p class="card-text">${blog.content}</p>
-                                <div class="card-actions">
-                                    <button class="btn-edit" onclick="openEditModal(${blog.id})">Edit Post</button>
-                                    <button class="btn-delete" onclick="deleteBlogPost(${blog.id})">Delete Post</button>
-                                </div>
-                            </div>
-                        </article>
-                    `;
-                    blogGrid.innerHTML += blogCard;
-                });
-
-            } catch (error) {
-                blogGrid.innerHTML = '<p style="color:red;">Failed to fetch blogs from the server. Make sure `node server.js` is running!</p>';
-=======
-                renderBlogs(result.data);
-
             } catch (error) {
                 console.log("Local API not reached. Showing GitHub Pages live demo data.");
                 renderBlogs(demoBlogs);
->>>>>>> 94a514486757a4613d0220493c492c9875a0467f
             }
         }
 
@@ -237,7 +205,7 @@
 
                 const blogCard = `
                     <article class="blog-card">
-                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Blog Image" class="card-image">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Blog Image" class="card-image" loading="lazy">
                         <div class="card-content">
                             <span class="card-tag">By ${blog.author || 'Anonymous'}</span>
                             <h3 class="card-title">${blog.title}</h3>
@@ -270,11 +238,7 @@
                     alert('Demo Mode: Edit option works when local backend server is connected.');
                 }
             } catch (error) {
-<<<<<<< HEAD
-                alert('Error fetching post details.');
-=======
                 alert('Demo Mode: Edit option works when local backend server is running.');
->>>>>>> 94a514486757a4613d0220493c492c9875a0467f
             }
         }
 
@@ -285,7 +249,6 @@
 
         // 4. Update Blog Post
         async function updateBlogPost() {
-<<<<<<< HEAD
             const id = document.getElementById('editPostId').value;
             const updatedData = {
                 title: document.getElementById('editTitle').value,
@@ -317,11 +280,8 @@
                     alert('Update failed: ' + result.message);
                 }
             } catch (error) {
-                alert('Server error while updating post.');
+                alert('Demo Mode: Updating works when local backend server is running.');
             }
-=======
-            closeEditModal();
->>>>>>> 94a514486757a4613d0220493c492c9875a0467f
         }
 
         // 5. Delete Blog Post
@@ -343,7 +303,7 @@
                     alert('Delete failed: ' + result.message);
                 }
             } catch (error) {
-                alert('Server error while deleting post.');
+                alert('Demo Mode: Deleting works when local backend server is running.');
             }
         }
 
