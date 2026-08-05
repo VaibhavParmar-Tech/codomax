@@ -1,6 +1,9 @@
 // Wait for DOM content to load
 document.addEventListener('DOMContentLoaded', () => {
     const blogForm = document.getElementById('blogForm');
+    if (!blogForm) return;
+
+    const API_BASE_URL = 'http://localhost:3000/api/posts';
 
     // Get Form Elements
     const titleInput = document.getElementById('title');
@@ -14,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const successMessage = document.getElementById('successMessage');
 
     // Form Submit Event Listener
-    blogForm.addEventListener('submit', function (e) {
+    blogForm.addEventListener('submit', async function (e) {
         e.preventDefault(); // Stop form submission / refresh
 
         clearErrors();
@@ -44,36 +47,68 @@ document.addEventListener('DOMContentLoaded', () => {
             isValid = false;
         }
 
-        // If form is valid
+        // If form is valid -> Send Data to Server (API Call)
         if (isValid) {
-            successMessage.textContent = '🎉 Blog post published successfully!';
-            successMessage.style.color = 'green';
-            successMessage.style.marginTop = '10px';
-            
-            blogForm.reset(); // Clear input fields
+            const newPost = {
+                title: titleInput.value.trim(),
+                category: categoryInput.value,
+                content: contentInput.value.trim(),
+                author: 'Admin'
+            };
+
+            try {
+                const response = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newPost)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    successMessage.textContent = '🎉 Blog post published successfully!';
+                    successMessage.style.color = 'green';
+                    successMessage.style.marginTop = '10px';
+                    
+                    blogForm.reset(); // Clear input fields
+
+                    // Redirect to home page after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    showError(successMessage, result.message || 'Error publishing blog.');
+                }
+            } catch (error) {
+                showError(successMessage, 'Failed to connect to the server. Make sure node server.js is running.');
+            }
         }
     });
 
     // Event: Live validation clearing when user types
     [titleInput, categoryInput, contentInput].forEach((input) => {
+        if (!input) return;
         input.addEventListener('input', () => {
             const errorSpan = document.getElementById(`${input.id}Error`);
             if (errorSpan) errorSpan.textContent = '';
-            successMessage.textContent = '';
+            if (successMessage) successMessage.textContent = '';
         });
     });
 
     // Helper Functions
     function showError(element, message) {
+        if (!element) return;
         element.textContent = message;
-        element.style.color = 'red';
+        element.style.color = '#e74c3c';
         element.style.fontSize = '14px';
     }
 
     function clearErrors() {
-        titleError.textContent = '';
-        categoryError.textContent = '';
-        contentError.textContent = '';
-        successMessage.textContent = '';
+        if (titleError) titleError.textContent = '';
+        if (categoryError) categoryError.textContent = '';
+        if (contentError) contentError.textContent = '';
+        if (successMessage) successMessage.textContent = '';
     }
 });

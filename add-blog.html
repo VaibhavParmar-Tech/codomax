@@ -4,65 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Blog Post</title>
+    
+    <!-- Inline Favicon to fix 404 Console Error -->
+    <link rel="icon" href="data:image/x-icon;base64,=">
+    
     <!-- CSS Link -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <!-- Header & Navigation Bar -->
-    <header>
-        <h1>Create a New Blog Post</h1>
+    <header class="navbar">
+        <div class="logo">
+            <h1>My Blog</h1>
+        </div>
         <nav>
-            <ul>
+            <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="add-blog.html">Add Blog</a></li>
+                <li><a href="add-blog.html" class="active">Add Blog</a></li>
             </ul>
         </nav>
     </header>
 
-    <hr>
-
     <!-- Main Content: Blog Form -->
-    <main>
-        <section>
+    <main class="main-container">
+        <section class="form-section">
             <h2>Post Details</h2>
-            <!-- Added id="blogForm" and novalidate attribute -->
             <form id="blogForm" action="#" method="POST" novalidate>
                 
                 <!-- Blog Title -->
-                <div>
-                    <label for="title">Blog Title:</label><br>
+                <div class="form-group">
+                    <label for="title">Blog Title:</label>
                     <input type="text" id="title" name="title" placeholder="Enter post title">
-                    <!-- Error Span -->
-                    <br><span class="error" id="titleError"></span>
+                    <span class="error" id="titleError"></span>
                 </div>
-                <br>
 
                 <!-- Category -->
-                <div>
-                    <label for="category">Category:</label><br>
+                <div class="form-group">
+                    <label for="category">Category:</label>
                     <select id="category" name="category">
                         <option value="">Select Category</option>
                         <option value="tech">Technology</option>
                         <option value="lifestyle">Lifestyle</option>
                         <option value="education">Education</option>
                     </select>
-                    <!-- Error Span -->
-                    <br><span class="error" id="categoryError"></span>
+                    <span class="error" id="categoryError"></span>
                 </div>
-                <br>
 
                 <!-- Blog Content -->
-                <div>
-                    <label for="content">Blog Content:</label><br>
-                    <textarea id="content" name="content" rows="6" cols="40" placeholder="Write your content here..."></textarea>
-                    <!-- Error Span -->
-                    <br><span class="error" id="contentError"></span>
+                <div class="form-group">
+                    <label for="content">Blog Content:</label>
+                    <textarea id="content" name="content" rows="6" placeholder="Write your content here..."></textarea>
+                    <span class="error" id="contentError"></span>
                 </div>
-                <br>
 
                 <!-- Submit Button -->
-                <button type="submit">Publish Post</button>
+                <button type="submit" class="btn-save">Publish Post</button>
                 
                 <!-- Success Message Container -->
                 <div id="successMessage" class="success-msg"></div>
@@ -71,14 +68,12 @@
         </section>
     </main>
 
-    <hr>
-
     <!-- Footer -->
-    <footer>
+    <footer class="footer">
         <p>&copy; 2026 My Personal Blog. All rights reserved.</p>
     </footer>
 
-    <!-- JS File Link (Mandatory for Day 4) -->
+    <!-- JS File Link -->
     <script src="script.js"></script>
 </body>
 </html>

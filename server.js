@@ -10,6 +10,9 @@ app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(express.json()); // Parse incoming JSON request bodies
 app.use(express.static(__dirname)); // Serve static files (HTML, CSS, JS)
 
+// Handle Favicon Requests directly to avoid 404 logging
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // In-memory Database for Blog Posts
 let blogPosts = [
   {
@@ -23,11 +26,11 @@ let blogPosts = [
 
 // 1. Root Route
 app.get('/', (req, res) => {
-  res.send('Blog API Server is running on Day 10!');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ==========================================
-// DAY 10: FULLY CONNECTED BLOG API ENDPOINTS
+// BLOG API ENDPOINTS
 // ==========================================
 
 // 2. GET Route: Fetch all blog posts
@@ -39,7 +42,7 @@ app.get('/api/posts', (req, res) => {
   });
 });
 
-// 3. GET Route (By ID): Fetch a single blog post (For editing modal)
+// 3. GET Route (By ID): Fetch a single blog post
 app.get('/api/posts/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const post = blogPosts.find((p) => p.id === id);
